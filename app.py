@@ -7,7 +7,7 @@ from os import path
 from data import goals, teachers
 
 app = Flask(__name__)
-app.config['DEBUG'] = True
+app.config.from_object('config')
 
 # ==== start preparing data and loading MOSK-data ====
 weekdays = {
@@ -25,11 +25,6 @@ for teacher in teachers:
     for day, value in teacher['free'].items():
         for time in value:
             value[time] = bool(random.choices([0, 1], weights=[4, 1])[0])
-
-# goals = {"travel": "Для путешествий", "study": "Для учебы", "work": "Для работы", "relocate": "Для переезда"}
-#
-# with open('teachers.json', 'r') as f:
-#     teachers = json.load(f)
 # ==== end loading MOSK-data ====
 
 # function for working with JSON-data (store requests and booking)
@@ -106,5 +101,23 @@ def booking_done():
 
     return render_template('booking_done.html', data=dict_request, day=weekdays[dict_request['clientWeekday']])
 
+@app.route('/upload/', methods = ['GET', 'POST'])
+def upload():
+    if req.method == 'POST':
+        file = req.files['file']
+        if file:
+            file.save(path.join(app.config['UPLOAD_FOLDER'], file.filename))
+            return 'Success!'
+    return '''
+        <!doctype html>
+        <title>Upload new File</title>
+        <h1>Upload new File</h1>
+        <form action="" method=post enctype=multipart/form-data>
+          <p><input type=file name=file>
+             <input type=submit value=Upload>
+        </form>
+        '''
+
 if __name__ == "__main__":
     app.run()
+

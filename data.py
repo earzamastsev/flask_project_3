@@ -324,6 +324,9 @@ teachers = [
 # with open('teachers.json', 'w') as f:
 #     json.dump(teachers, f, indent=4)
 
+import pprint
 
+for teacher in teachers:
+    print(len(str(teacher['free'])))
 
 
