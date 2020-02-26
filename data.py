@@ -1,7 +1,6 @@
 goals = {"travel": "Для путешествий", "study": "Для учебы", "work": "Для работы", "relocate": "Для переезда"}
 
 teachers = [
-
     {
         "id": 0,
         "name": "Morris Simmmons",
@@ -320,13 +319,3 @@ teachers = [
         }
     },
 ]
-
-# with open('teachers.json', 'w') as f:
-#     json.dump(teachers, f, indent=4)
-
-import pprint
-
-for teacher in teachers:
-    print(len(str(teacher['free'])))
-
-

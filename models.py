@@ -1,7 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
-from app import app
-from app import teachers
-db = SQLAlchemy(app)
+from app import db
 
 class Teacher(db.Model):
     __tablename__ = 'teachers'
@@ -15,6 +12,7 @@ class Teacher(db.Model):
     free = db.Column(db.String(1024))
     booking = db.relationship('Booking', back_populates='teacher')
 
+
 class Booking(db.Model):
     __tablename__ = 'booking'
     id = db.Column(db.Integer, primary_key=True)
@@ -24,6 +22,7 @@ class Booking(db.Model):
     clientName = db.Column(db.String(255))
     clientPhone = db.Column(db.String(255))
     teacher = db.relationship('Teacher', back_populates='booking')
+
 
 class Request(db.Model):
     __tablename__ = 'requests'
