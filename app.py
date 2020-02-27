@@ -1,10 +1,13 @@
 from flask import Flask
 from flask import render_template
 from flask import request as req
+from flask import redirect
 import json
 import random
-from os import path
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from wtforms import StringField, RadioField, IntegerField, HiddenField
+from wtforms.validators import DataRequired
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -12,6 +15,7 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 
+# ==== Creating Models and relationship one-to-many for SQLAlchemy ====
 class Teacher(db.Model):
     __tablename__ = 'teachers'
     id = db.Column(db.Integer, primary_key=True)
@@ -43,6 +47,30 @@ class Request(db.Model):
     time = db.Column(db.String(8))
     name = db.Column(db.String(255))
     phone = db.Column(db.String(255))
+
+
+# ==== Creating WTForms classes for booking and request views ====
+class BookingForm(FlaskForm):
+    clientWeekday = HiddenField(validators=[DataRequired()])
+    clientTime = HiddenField(validators=[DataRequired()])
+    clientName = StringField('Вас зовут', validators=[DataRequired()])
+    clientPhone = StringField('Ваш телефон', validators=[DataRequired()])
+    teacher = HiddenField(validators=[DataRequired()])
+
+
+class RequestForm(FlaskForm):
+    goal = RadioField(
+        'Какая цель занятий?',
+        choices=[('travel', 'Для путешествий'), ('study', 'Для учебы'), ('work', 'Для работы'),
+                 ('relocate', 'Для переезда')],
+        validators=[DataRequired()])
+    time = RadioField(
+        'Сколько времени есть?',
+        choices=[('1-2', '1-2 часа в неделю'), ('3-5', '3-5 часов в неделю'), ('5-7', '5-7 часов в неделю'),
+                 ('7-10', '7-10 часов в неделю')],
+        validators=[DataRequired()])
+    name = StringField('Вас зовут', validators=[DataRequired()])
+    phone = StringField('Ваш телефон', validators=[DataRequired()])
 
 
 # ==== start preparing data and loading MOSK-data ====
@@ -89,42 +117,34 @@ def profile(teacher_id):
 
 @app.route('/request/')
 def request():
-    return render_template('request.html')
+    form = RequestForm()
+    return render_template('request.html', form=form)
 
 
 @app.route('/request_done/', methods=['POST'])
 def request_done():
-    dict_request = {}
-    dict_request['goal'] = req.form.get('goal')
-    dict_request['time'] = req.form.get('time')
-    dict_request['name'] = req.form.get('name')
-    dict_request['phone'] = req.form.get('phone')
-
-    write_json('request.json', dict_request)
-
-    return render_template('request_done.html', data=dict_request, goals=goals)
+    form = RequestForm()
+    if form.validate_on_submit():
+        return render_template('request_done.html', data=form, goals=goals)
+    else:
+        return form.errors
 
 
 @app.route('/booking/<teacher_id>/<day>/<time>/')
 def booking(teacher_id, day, time):
     for teacher in teachers:
         if teacher.id == int(teacher_id):
-            break
-    return render_template('booking.html', teacher=teacher, weekdays=weekdays, day=day, time=time)
+            form = BookingForm()
+            return render_template('booking.html', form=form, teacher=teacher, weekdays=weekdays, day=day, time=time)
 
 
 @app.route('/booking_done/', methods=['POST'])
 def booking_done():
-    dict_request = {}
-    dict_request['clientWeekday'] = req.form.get('clientWeekday')
-    dict_request['clientTime'] = req.form.get('clientTime')
-    dict_request['clientTeacher'] = req.form.get('clientTeacher')
-    dict_request['clientName'] = req.form.get('clientName')
-    dict_request['clientPhone'] = req.form.get('clientPhone')
-
-    write_json('booking.json', dict_request)
-
-    return render_template('booking_done.html', data=dict_request, day=weekdays[dict_request['clientWeekday']])
+    form = BookingForm()
+    if form.validate_on_submit():
+        return render_template('booking_done.html', data=form, day=weekdays[form.clientWeekday.data])
+    else:
+        return form.errors
 
 
 if __name__ == "__main__":

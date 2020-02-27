@@ -11,12 +11,12 @@
             <h2 class="h3 card-title mt-4 mb-2">Запрос отправлен!</h2>
             <p>Скоро мы вам перезвоним!</p>
           </div>
-          <hr />
+          <hr>
           <div class="card-body mx-5">
-            <p><b>Цель занятий:</b> {{ goals[data.goal] }}</p>
-            <p><b>Времени есть:</b> {{ data.time }}</p>
-            <p><b>Имя:</b> {{ data.name }}</p>
-            <p><b>Телефон:</b> {{ data.phone }}</p>
+            <p><b>Цель занятий:</b> {{ goals[data.goal.data][0] }}</p>
+            <p><b>Времени есть:</b> {{ data.time.data }}</p>
+            <p><b>Имя:</b> {{ data.name.data }}</p>
+            <p><b>Телефон:</b> {{ data.phone.data }}</p>
           </div>
         </div>
       </div>
