@@ -6,11 +6,11 @@ import random
 from os import path
 from flask_sqlalchemy import SQLAlchemy
 
-
 app = Flask(__name__)
 app.config.from_object('config')
 
 db = SQLAlchemy(app)
+
 
 class Teacher(db.Model):
     __tablename__ = 'teachers'
@@ -44,6 +44,7 @@ class Request(db.Model):
     name = db.Column(db.String(255))
     phone = db.Column(db.String(255))
 
+
 # ==== start preparing data and loading MOSK-data ====
 weekdays = {
     "mon": "Понедельник",
@@ -55,6 +56,7 @@ weekdays = {
     "sun": "Воскресенье"
 }
 goals = {"travel": "Для путешествий", "study": "Для учебы", "work": "Для работы", "relocate": "Для переезда"}
+
 
 @app.route('/')
 def index():
@@ -123,6 +125,7 @@ def booking_done():
     write_json('booking.json', dict_request)
 
     return render_template('booking_done.html', data=dict_request, day=weekdays[dict_request['clientWeekday']])
+
 
 if __name__ == "__main__":
     teachers = db.session.query(Teacher).all()

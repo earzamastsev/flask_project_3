@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
+
 class Teacher(db.Model):
     __tablename__ = 'teachers'
     id = db.Column(db.Integer, primary_key=True)
@@ -39,6 +40,7 @@ class Request(db.Model):
     time = db.Column(db.String(8))
     name = db.Column(db.String(255))
     phone = db.Column(db.String(255))
+
 
 db.create_all()
 

@@ -1,29 +1,32 @@
 {% extends 'base.html' %}
 
-  {% block container %}
-  <main class="container mt-3">
-    <h1 class="h1 text-center w-50 mx-auto mt-1 py-5 mb-4"><strong>🚜<br />Преподаватели <br> {{ goals[goal] }}</strong></h1>
+{% block container %}
+<main class="container mt-3">
+    <h1 class="h1 text-center w-50 mx-auto mt-1 py-5 mb-4"><strong>{{ goals[goal][1] }}<br/>Преподаватели <br> {{
+        goals[goal][0] }}</strong></h1>
 
-      <div class="row">
-      <div class="col-12 col-lg-10 offset-lg-1 m-auto">
+    <div class="row">
+        <div class="col-12 col-lg-10 offset-lg-1 m-auto">
 
-     {% for teacher in teachers|sort(attribute='rating', reverse=True) %}
-        <div class="card mb-4">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-3"><img src="{{ teacher['picture'] }}" class="img-fluid" alt=""></div>
-              <div class="col-9">
-                <p class="float-right">Рейтинг: {{ teacher['rating'] }} Ставка: {{ teacher['price'] }} / час</p>
-                <h2 class="h4">{{ teacher['name'] }}</h2>
-                <p>{{ teacher['about'] }}</p>
-                <a href="/profiles/{{ teacher['id'] }}" class="btn btn-outline-primary btn-sm mr-3 mb-2">Показать информаци и расписание</a>
-              </div>
+            {% for teacher in teachers|sort(attribute='rating', reverse=True) %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-3"><img src="{{ teacher['picture'] }}" class="img-fluid" alt=""></div>
+                        <div class="col-9">
+                            <p class="float-right">Рейтинг: {{ teacher['rating'] }} Ставка: {{ teacher['price'] }} /
+                                час</p>
+                            <h2 class="h4">{{ teacher['name'] }}</h2>
+                            <p>{{ teacher['about'] }}</p>
+                            <a href="/profiles/{{ teacher['id'] }}" class="btn btn-outline-primary btn-sm mr-3 mb-2">Показать
+                                информаци и расписание</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
 
-      </div>
+        </div>
     </div>
 
     <h2 class="text-center mt-5 mb-3">Не нашли своего репетитора?</h2>
@@ -33,5 +36,5 @@
     </div>
 
 
-  </main>
- {% endblock %}
+</main>
+{% endblock %}
