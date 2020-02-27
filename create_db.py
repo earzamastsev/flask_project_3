@@ -50,6 +50,7 @@ for teacher in teachers:
         for time in value:
             value[time] = bool(random.choices([0, 1], weights=[4, 1])[0])
 
+# Loading MOSK data to SQlite DB
 tmp_lst = []
 for one in teachers:
     teacher = Teacher(

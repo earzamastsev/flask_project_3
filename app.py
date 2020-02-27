@@ -73,7 +73,7 @@ class RequestForm(FlaskForm):
     phone = StringField('Ваш телефон', validators=[DataRequired()])
 
 
-# ==== start preparing data and loading MOSK-data ====
+# ==== preparing data ====
 weekdays = {
     "mon": "Понедельник",
     "tue": "Вторник",
@@ -86,6 +86,7 @@ weekdays = {
 goals = {"travel": "Для путешествий", "study": "Для учебы", "work": "Для работы", "relocate": "Для переезда"}
 
 
+# ==== views for URLs ====
 @app.route('/')
 def index():
     teachers_for_index = random.sample(teachers, 6)
@@ -125,6 +126,10 @@ def request():
 def request_done():
     form = RequestForm()
     if form.validate_on_submit():
+        request = Request()
+        form.populate_obj(request)
+        db.session.add(request)
+        db.session.commit()
         return render_template('request_done.html', data=form, goals=goals)
     else:
         return form.errors
@@ -142,11 +147,17 @@ def booking(teacher_id, day, time):
 def booking_done():
     form = BookingForm()
     if form.validate_on_submit():
+        form.teacher.data = db.session.query(Teacher).get(form.teacher.data)
+        booking = Booking()
+        form.populate_obj(booking)
+        db.session.add(booking)
+        db.session.commit()
         return render_template('booking_done.html', data=form, day=weekdays[form.clientWeekday.data])
     else:
         return form.errors
 
 
+# ==== starting app ====
 if __name__ == "__main__":
     teachers = db.session.query(Teacher).all()
     app.run()
