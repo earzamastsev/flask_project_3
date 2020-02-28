@@ -1,7 +1,6 @@
 from flask import Flask
 from flask import render_template, redirect, url_for, abort
 from flask import request as req
-from flask import redirect
 import json
 import random
 from flask_sqlalchemy import SQLAlchemy
