@@ -1,22 +1,38 @@
-
 {% extends 'base.html' %}
 
-  {% block container %}
+{% block container %}
 
-  <main class="container mt-3">
+{% if form.errors %}
+<div class="container mt-3">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Ошибки при вводе данных!</h4>
+        <p>При вводе данных допущены ошибки: вы не заполнили поля, либо ввели данные в неверном формате.
+            Пожалуйста исправьте поля, указанные ниже...</p>
+        <hr>
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+        {% for error in field_errors %}
+        <p class="mb-0">{{ form[field_name].label }}: {{ error }}</p>
+        {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<main class="container mt-3">
     <div class="row mt-5">
-      <div class="col-10 col-md-6 offset-1 offset-md-3 mb-3">
-        <form action="{{ url_for('booking_done') }}" class="card mb-3" method="POST">
-          {{ form.csrf_token }}
-          <div class="card-body text-center pt-5">
-            <img src="../static/pict 1.png" class="mb-3" width="95" alt="">
-            <h2 class="h5 card-title mt-2 mb-2">{{ teacher.name }}</h2>
-            <p class="my-1">Запись на пробный урок</p>
-            <p class="my-1">{{ weekdays[day] }}, {{ time }}:00</p>
-          </div>
-          <hr>
-          <div class="card-body mx-3">
-              <div class="row">
+        <div class="col-10 col-md-6 offset-1 offset-md-3 mb-3">
+            <form action="{{ url_for('booking', teacher_id=teacher.id, day=day, time=time) }}" class="card mb-3"
+                  method="POST">
+                {{ form.csrf_token }}
+                <div class="card-body text-center pt-5">
+                    <img src="{{ teacher.picture }}" class="mb-3" width="95" alt="">
+                    <h2 class="h5 card-title mt-2 mb-2">{{ teacher.name }}</h2>
+                    <p class="my-1">Запись на пробный урок</p>
+                    <p class="my-1">{{ weekdays[day] }}, {{ time }}:00</p>
+                </div>
+                <hr>
+                <div class="card-body mx-3">
+                    <div class="row">
                 {{ form.clientWeekday(value=day) }}
                 {{ form.clientTime(value=time) }}
                 {{ form.teacher(value=teacher.id ) }}

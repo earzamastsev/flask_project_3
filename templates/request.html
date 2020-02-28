@@ -1,9 +1,28 @@
 {% extends 'base.html' %}
 
 {% block container %}
+
+
+{% if form.errors %}
+<div class="container mt-3">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Ошибки при вводе данных!</h4>
+        <p>При вводе данных допущены ошибки: вы не заполнили поля, либо ввели данные в неверном формате.
+            Пожалуйста исправьте поля, указанные ниже...</p>
+        <hr>
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+        {% for error in field_errors %}
+        <p class="mb-0">{{ form[field_name].label }}: {{ error }}</p>
+        {% endfor %}
+        {% endfor %}
+    </div>
+
+</div>
+{% endif %}
+
 <main class="container mt-5">
     <div class="col-12 col-sm-10 col-lg-6 offset-lg-3 offset-sm-1">
-        <form action="{{ url_for('request_done') }}" class="card mb-5" method="POST">
+        <form action="{{ url_for('request') }}" class="card mb-5" method="POST">
             {{ form.csrf_token }}
 
             <div class="card-body text-center pt-5">
