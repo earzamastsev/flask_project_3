@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, redirect
+from flask import render_template, redirect, url_for, abort
 from flask import request as req
 from flask import redirect
 import json
@@ -19,34 +19,34 @@ db = SQLAlchemy(app)
 class Teacher(db.Model):
     __tablename__ = 'teachers'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
-    about = db.Column(db.String(2048))
-    picture = db.Column(db.String(64))
+    name = db.Column(db.String(255), nullable=False)
+    about = db.Column(db.String(2048), nullable=False)
+    picture = db.Column(db.String(64), nullable=False)
     rating = db.Column(db.Float)
-    price = db.Column(db.Integer)
-    goals = db.Column(db.String(255))
-    free = db.Column(db.String(1024))
+    price = db.Column(db.Integer, nullable=False)
+    goals = db.Column(db.String(255), nullable=False)
+    free = db.Column(db.String(1024), nullable=False)
     booking = db.relationship('Booking', back_populates='teacher')
 
 
 class Booking(db.Model):
     __tablename__ = 'booking'
     id = db.Column(db.Integer, primary_key=True)
-    clientWeekday = db.Column(db.String(64))
-    clientTime = db.Column(db.String(8))
+    clientWeekday = db.Column(db.String(64), nullable=False)
+    clientTime = db.Column(db.String(8), nullable=False)
     clientTeacher = db.Column(db.Integer, db.ForeignKey('teachers.id'))
-    clientName = db.Column(db.String(255))
-    clientPhone = db.Column(db.String(255))
+    clientName = db.Column(db.String(255), nullable=False)
+    clientPhone = db.Column(db.String(255), nullable=False, unique=True)
     teacher = db.relationship('Teacher', back_populates='booking')
 
 
 class Request(db.Model):
     __tablename__ = 'requests'
     id = db.Column(db.Integer, primary_key=True)
-    goal = db.Column(db.String(255))
-    time = db.Column(db.String(8))
-    name = db.Column(db.String(255))
-    phone = db.Column(db.String(255))
+    goal = db.Column(db.String(255), nullable=False)
+    time = db.Column(db.String(8), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    phone = db.Column(db.String(255), nullable=False, unique=True)
 
 
 # ==== Creating WTForms classes for booking and request views ====
@@ -103,14 +103,16 @@ def all():
 
 @app.route('/goals/<goal>/')
 def goal(goal):
-    goals_teacher = []
-    for teacher in teachers:
-        if goal in teacher.goals:
-            goals_teacher.append(teacher)
-    return render_template('goal.html', goals=goals, goal=goal, teachers=goals_teacher)
+    if goal in goals.keys():
+        goals_teacher = []
+        for teacher in teachers:
+            if goal in json.loads(teacher.goals):
+                goals_teacher.append(teacher)
+        return render_template('goal.html', goals=goals, goal=goal, teachers=goals_teacher)
+    return abort(404, description='Запрошенная цель обучения отсутствует')
 
 
-@app.route('/profiles/<teacher_id>/')
+@app.route('/profiles/<teacher_id>/', )
 def profile(teacher_id):
     for teacher in teachers:
         if teacher.id == int(teacher_id):
@@ -140,9 +142,11 @@ def booking(teacher_id, day, time):
         db.session.add(booking)
         db.session.commit()
         return render_template('booking_done.html', data=form, day=weekdays[form.clientWeekday.data])
-    for teacher in teachers:
-        if teacher.id == int(teacher_id):
-            return render_template('booking.html', form=form, teacher=teacher, weekdays=weekdays, day=day, time=time)
+    teacher = db.session.query(Teacher).get(teacher_id)
+    if teacher and (day in weekdays.keys()) and int(time) in range(8, 23, 1):
+        return render_template('booking.html', form=form, teacher=teacher, weekdays=weekdays, day=day, time=time)
+    else:
+        return abort(404, description='Параметры бронирования указаны не верно')
 
 
 # @app.route('/booking_done/', methods=['POST'])
