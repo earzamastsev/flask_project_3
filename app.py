@@ -85,14 +85,14 @@ weekdays = {
     "sat": "Суббота",
     "sun": "Воскресенье"
 }
-goals = {"travel": "Для путешествий", "study": "Для учебы", "work": "Для работы", "relocate": "Для переезда"}
+goals = {"travel": ["Для путешествий", "⛱"], "study": ["Для учебы", "🏫"], "work": ["Для работы", "🏢"],
+         "relocate": ["Для переезда", "🚜"]}
 
 
 # ==== views for URLs ====
 @app.route('/')
 def index():
     teachers_for_index = random.sample(teachers, 6)
-    print(teachers_for_index)
     return render_template('index.html', teachers=teachers_for_index, goals=goals)
 
 
@@ -114,10 +114,12 @@ def goal(goal):
 
 @app.route('/profiles/<teacher_id>/', )
 def profile(teacher_id):
-    for teacher in teachers:
-        if teacher.id == int(teacher_id):
-            break
-    return render_template('profile.html', goals=goals, teacher=teacher, weekdays=weekdays)
+    teacher = db.session.query(Teacher).filter(Teacher.id == teacher_id).first()
+    if teacher:
+        teacher.free = json.loads(teacher.free)
+        teacher.goals = json.loads(teacher.goals)
+        return render_template('profile.html', goals=goals, teacher=teacher, weekdays=weekdays)
+    return abort(404, description='Запрошенный преподователь не найден')
 
 
 @app.route('/request/', methods=['POST', 'GET'])
@@ -149,18 +151,9 @@ def booking(teacher_id, day, time):
         return abort(404, description='Параметры бронирования указаны не верно')
 
 
-# @app.route('/booking_done/', methods=['POST'])
-# def booking_done():
-#     form = BookingForm()
-#     if form.validate_on_submit():
-#         form.teacher.data = db.session.query(Teacher).get(form.teacher.data)
-#         booking = Booking()
-#         form.populate_obj(booking)
-#         db.session.add(booking)
-#         db.session.commit()
-#         return render_template('booking_done.html', data=form, day=weekdays[form.clientWeekday.data])
-#
-#     return render_template('booking.html', form=form)
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html', error=error)
 
 # ==== starting app ====
 if __name__ == "__main__":
