@@ -29,7 +29,7 @@ class Booking(db.Model):
     clientTime = db.Column(db.String(8), nullable=False)
     clientTeacher = db.Column(db.Integer, db.ForeignKey('teachers.id'))
     clientName = db.Column(db.String(255), nullable=False)
-    clientPhone = db.Column(db.String(255), nullable=False, unique=True)
+    clientPhone = db.Column(db.String(255), nullable=False)
     teacher = db.relationship('Teacher', back_populates='booking')
 
 
@@ -39,7 +39,7 @@ class Request(db.Model):
     goal = db.Column(db.String(255), nullable=False)
     time = db.Column(db.String(8), nullable=False)
     name = db.Column(db.String(255), nullable=False)
-    phone = db.Column(db.String(255), nullable=False, unique=True)
+    phone = db.Column(db.String(255), nullable=False)
 
 
 db.create_all()

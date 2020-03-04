@@ -52,7 +52,8 @@ class Request(db.Model):
 class BookingForm(FlaskForm):
     clientWeekday = HiddenField(validators=[DataRequired()])
     clientTime = HiddenField(validators=[DataRequired()])
-    clientName = StringField('Вас зовут', validators=[DataRequired(message='Поле не должно быть пустым.')])
+    clientName = StringField('Вас зовут', validators=[DataRequired(message='Поле не должно быть пустым.'), \
+                                                      Regexp("^[A-zА-яЁё]+$", message='Имя дожно состоять из букв.')])
     clientPhone = StringField('Ваш телефон (в формате 89111234567)', validators=[
         Regexp('^((\+7|7|8)+([0-9]){10})$', message='Неверный формат телефонного номера.')])
     teacher = HiddenField(validators=[DataRequired()])
@@ -69,7 +70,8 @@ class RequestForm(FlaskForm):
         choices=[('1-2', '1-2 часа в неделю'), ('3-5', '3-5 часов в неделю'), ('5-7', '5-7 часов в неделю'),
                  ('7-10', '7-10 часов в неделю')], default='1-2',
         validators=[DataRequired(message='Укажите сколько времени готовы посвещать занятиям.')])
-    name = StringField('Вас зовут', validators=[DataRequired(message='Поле не должно быть пустым.')])
+    name = StringField('Вас зовут', validators=[DataRequired(message='Поле не должно быть пустым.'), \
+                                                Regexp("^[A-zА-яЁё]+$", message='Имя дожно состоять из букв.')])
     phone = StringField('Ваш телефон (в формате 89111234567)',
                         validators=[Regexp('^((\+7|7|8)+([0-9]){10})$', message='Неверный формат телефонного номера.')])
 
