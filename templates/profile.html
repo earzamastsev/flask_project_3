@@ -14,7 +14,8 @@
                         <p>
                             {% for goal in teacher.goals %}
                             <span class="badge badge-secondary mr-2">
-                  {{ goals[goal] }}
+
+                  {{ goals[goal][0] }}
                 </span>
                             {% endfor %}
                             Рейтинг: {{ teacher.rating }} Ставка: {{ teacher.price }} / час
