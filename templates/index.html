@@ -8,15 +8,7 @@
         <div class="btn-group mx-auto mb-0" role="group" aria-label="Basic example">
             {% for href, description in goals.items() %}
             <a href="/goals/{{ href }}/" class="btn btn-outline-secondary">
-                {% if description[0]=="Для путешествий" %}
-                ⛱ {{ description[0] }}</a>
-            {% elif description[0]=="Для учебы" %}
-            🏫 {{ description[0] }}</a>
-            {% elif description[0]=="Для работы" %}
-            🏢 {{ description[0] }}</a>
-            {% elif description[0]=="Для переезда" %}
-            🚜 {{ description[0] }}</a>
-            {% endif %}
+                {{ description[1] }} {{ description[0] }}</a>
             {% endfor %}
         </div>
     </div>
